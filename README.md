@@ -1,5 +1,8 @@
 icons.yml
 ```
+---
+Name: app-icons
+---
 Goldfinch\Icon\Forms\IconFileField:
   icon_folder: ''
 
