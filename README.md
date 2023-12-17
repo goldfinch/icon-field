@@ -4,7 +4,7 @@ icons.yml
 Name: app-icons
 ---
 Goldfinch\Icon\Forms\IconFileField:
-  icon_folder: ''
+  icon_folder: 'assets/icons'
 
 Goldfinch\Icon\Forms\IconFontField:
   icon_fonts:

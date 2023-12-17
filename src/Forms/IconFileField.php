@@ -8,9 +8,7 @@ use SilverStripe\ORM\ArrayList;
 use SilverStripe\View\ArrayData;
 use SilverStripe\Forms\FormField;
 use SilverStripe\Control\Director;
-use Goldfinch\Icon\Forms\IconField;
 use SilverStripe\View\Requirements;
-use SilverStripe\Core\Config\Config;
 use SilverStripe\Forms\OptionsetField;
 use SilverStripe\ORM\FieldType\DBHTMLText;
 use SilverStripe\Core\Manifest\ModuleResourceLoader;
@@ -32,7 +30,7 @@ class IconFileField extends OptionsetField
     public function getFolderName()
     {
         if (is_null(self::$folder_name)) {
-            self::$folder_name = Config::inst()->get(IconField::class, 'icons_directory');
+          self::$folder_name = self::config()->get('icon_folder');
         }
         return self::$folder_name;
     }
@@ -137,7 +135,7 @@ class IconFileField extends OptionsetField
 
     public function extraClass()
     {
-        $classes = ['field', 'IconField', parent::extraClass()];
+        $classes = ['field', 'IconFileField', parent::extraClass()];
 
         if (($key = array_search('icon', $classes)) !== false) {
             unset($classes[$key]);

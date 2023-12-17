@@ -2,45 +2,23 @@
 
 namespace Goldfinch\Icon\Forms;
 
-use DirectoryIterator;
 use SilverStripe\Core\Path;
 use SilverStripe\ORM\ArrayList;
 use SilverStripe\View\ArrayData;
 use SilverStripe\Forms\FormField;
 use SilverStripe\Control\Director;
-use Goldfinch\Icon\Forms\IconField;
 use SilverStripe\View\Requirements;
-use SilverStripe\Core\Config\Config;
 use SilverStripe\Forms\OptionsetField;
 use SilverStripe\ORM\FieldType\DBHTMLText;
 use SilverStripe\Core\Manifest\ModuleResourceLoader;
 
 class IconFontField extends OptionsetField
 {
-    private static $folder_name;
-
-    public function __construct($name, $title = null, $sourceFolder = null)
+    public function __construct($name, $title = null)
     {
-        if ($sourceFolder) {
-            $this->setFolderName($sourceFolder);
-        }
         parent::__construct($name, $title, []);
 
         $this->setSourceIcons();
-    }
-
-    public function getFolderName()
-    {
-        if (is_null(self::$folder_name)) {
-            self::$folder_name = Config::inst()->get(IconField::class, 'icons_directory');
-        }
-        return self::$folder_name;
-    }
-
-    public function setFolderName($folder_name)
-    {
-        self::$folder_name = $folder_name;
-        return $this;
     }
 
     public function setSourceIcons()
@@ -123,7 +101,7 @@ class IconFontField extends OptionsetField
 
     public function extraClass()
     {
-        $classes = ['field', 'IconField', parent::extraClass()];
+        $classes = ['field', 'IconFontField', parent::extraClass()];
 
         if (($key = array_search('icon', $classes)) !== false) {
             unset($classes[$key]);
