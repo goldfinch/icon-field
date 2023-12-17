@@ -1,0 +1,1 @@
+document.querySelectorAll(".js-goldfinchicon input[type=radio]").forEach(e=>{e.addEventListener("click",i),e.previous=e.checked});function i(e){this.previous&&(this.checked=!1),document.querySelectorAll(`input[type=radio][name=${this.name}]`).forEach(c=>{c.previous=c.checked})}

@@ -14,6 +14,11 @@
         "silverstripe/framework": "^5.0",
         "silverstripe/admin": "^2.0"
     },
+    "extra": {
+        "expose": [
+            "client/dist"
+        ]
+    },
     "autoload": {
         "psr-4": {
             "Goldfinch\\Icon\\": "src/"
