@@ -1,64 +1,76 @@
 .goldfinchicon {}
 
 .goldfinchicon .goldfinchicon__wrapper {
-  border-radius: var(--bs-border-radius);
   border: 1px solid #dee2e6;
+  border-radius: var(--bs-border-radius);
 }
 
 .goldfinchicon .goldfinchicon__wrapper > ul {
-  list-style: none;
-  padding: 10px;
-  margin: 0;
   display: flex;
   flex-wrap: wrap;
+  padding: 10px;
+  margin: 0;
+  list-style: none;
 }
+
 .goldfinchicon .goldfinchicon__wrapper > ul > li {
-  border-radius: var(--bs-border-radius);
   margin: 10px;
   overflow: hidden;
+  border-radius: var(--bs-border-radius);
 }
 .goldfinchicon .goldfinchicon__wrapper > ul > li {}
+
 .goldfinchicon .goldfinchicon__wrapper > ul > li > input {
   display: none;
 }
+
 .goldfinchicon .goldfinchicon__wrapper > ul > li > input:checked + label {
   /* background-color: #eee; */
+
   /* box-shadow: inset 0px 0px 0px 2px #ededed; */
   opacity: 1;
 }
+
 .goldfinchicon .goldfinchicon__wrapper > ul > li > label {
   padding: 10px;
   cursor: pointer;
   opacity: 0.3;
 }
+
 .goldfinchicon .goldfinchicon__wrapper > ul > li:first-child {
   display: none;
 }
 .goldfinchicon .goldfinchicon__wrapper > ul > li:first-child > label {}
+
 .goldfinchicon .goldfinchicon__wrapper > ul > li:first-child > label {
-  /* background-color: #ddd; */
-  /* box-shadow: inset 0px 0px 0px 2px #ededed; */
-  border-radius: 50%;
   overflow: hidden;
   background-image: linear-gradient(45deg, #ccc 25%, transparent 25%),linear-gradient(-45deg, #ccc 25%, transparent 25%),linear-gradient(45deg, transparent 75%, #ccc 75%),linear-gradient(-45deg, transparent 75%, #ccc 75%);
+  background-position: 0 0, 0 10px, 10px -10px, -10px 0;
   background-size: 20px 20px;
-  background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+
+  /* background-color: #ddd; */
+
+  /* box-shadow: inset 0px 0px 0px 2px #ededed; */
+  border-radius: 50%;
 }
-.goldfinchicon .goldfinchicon__wrapper > ul > li:first-child > label:before {
-  content: 'no icon';
-  font-size: 10px;
+
+.goldfinchicon .goldfinchicon__wrapper > ul > li:first-child > label::before {
   display: inline-flex;
-  font-weight: bold;
   align-items: center;
   justify-content: center;
-  font-variant: small-caps;
   width: 32px;
   height: 32px;
+  font-size: 10px;
+  font-weight: bold;
+  font-variant: small-caps;
+  content: 'no icon';
 }
+
 .goldfinchicon .goldfinchicon__wrapper > ul > li > label > i {
   font-size: 32px;
 }
 .goldfinchicon .goldfinchicon__wrapper > ul > li > label > img {}
+
 .goldfinchicon .goldfinchicon__wrapper > ul > li > label > svg {
   width: 32px;
   height: auto;
