@@ -1,11 +1,9 @@
 ---
 Name: goldfinch-icon
 ---
-
 SilverStripe\Core\Injector\Injector:
   Icon:
     class: Goldfinch\Icon\ORM\FieldType\DBIcon
-
 
 SilverStripe\Admin\LeftAndMain:
   extensions:

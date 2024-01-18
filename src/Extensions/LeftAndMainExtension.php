@@ -12,15 +12,11 @@ class LeftAndMainExtension extends Extension
     {
         $fonts = IconFontField::config()->get('icon_fonts');
 
-        if ($fonts && is_array($fonts))
-        {
-            foreach ($fonts as $include)
-            {
+        if ($fonts && is_array($fonts)) {
+            foreach ($fonts as $include) {
                 Requirements::css($include);
             }
-        }
-        else if ($fonts && is_string($fonts))
-        {
+        } elseif ($fonts && is_string($fonts)) {
             Requirements::css($fonts);
         }
     }

@@ -25,8 +25,7 @@ class IconFontField extends OptionsetField
     {
         $icons = self::config()->get('icon_list');
 
-        if (array_is_list($icons))
-        {
+        if (array_is_list($icons)) {
             $icons = array_combine($icons, $icons);
         }
 
@@ -37,8 +36,10 @@ class IconFontField extends OptionsetField
     public function getAbsolutePathFromRelative($relative_path)
     {
         return Path::join(
-            (Director::publicDir() ? Director::publicFolder() : Director::baseFolder()),
-            ModuleResourceLoader::singleton()->resolveURL($relative_path)
+            Director::publicDir()
+                ? Director::publicFolder()
+                : Director::baseFolder(),
+            ModuleResourceLoader::singleton()->resolveURL($relative_path),
         );
     }
 
@@ -71,27 +72,28 @@ class IconFontField extends OptionsetField
             'Name' => $this->name,
             'Value' => '',
             'Title' => '',
-            'isChecked' => (!$this->value || $this->value == '')
+            'isChecked' => !$this->value || $this->value == '',
         ]);
 
-        if ($source)
-        {
-            foreach ($source as $value => $title)
-            {
-                $itemID = $this->ID() . '_' . preg_replace('/[^a-zA-Z0-9]/', '', $value);
+        if ($source) {
+            foreach ($source as $value => $title) {
+                $itemID =
+                    $this->ID() .
+                    '_' .
+                    preg_replace('/[^a-zA-Z0-9]/', '', $value);
 
                 $options[] = ArrayData::create([
                     'ID' => $itemID,
                     'Name' => $this->name,
                     'Value' => $value,
                     'Title' => $title,
-                    'isChecked' => $value == $this->value
+                    'isChecked' => $value == $this->value,
                 ]);
             }
         }
 
         $properties = array_merge($properties, [
-            'Options' => ArrayList::create($options)
+            'Options' => ArrayList::create($options),
         ]);
 
         $this->setTemplate('IconFontField');

@@ -30,7 +30,7 @@ class IconFileField extends OptionsetField
     public function getFolderName()
     {
         if (is_null(self::$folder_name)) {
-          self::$folder_name = self::config()->get('icon_folder');
+            self::$folder_name = self::config()->get('icon_folder');
         }
         return self::$folder_name;
     }
@@ -46,19 +46,25 @@ class IconFileField extends OptionsetField
         $icons = [];
         $extensions = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'svg'];
         $relative_folder_path = $this->getFolderName();
-        $absolute_folder_path = $this->getAbsolutePathFromRelative($relative_folder_path);
-
+        $absolute_folder_path = $this->getAbsolutePathFromRelative(
+            $relative_folder_path,
+        );
 
         // Scan each directory for files
         if (file_exists($absolute_folder_path)) {
             $directory = new DirectoryIterator($absolute_folder_path);
             foreach ($directory as $fileinfo) {
                 if ($fileinfo->isFile()) {
-                    $extension = strtolower(pathinfo($fileinfo->getFilename(), PATHINFO_EXTENSION));
+                    $extension = strtolower(
+                        pathinfo($fileinfo->getFilename(), PATHINFO_EXTENSION),
+                    );
 
                     // Only add to our available icons if it's an extension we're after
                     if (in_array($extension, $extensions)) {
-                        $value = Path::join($relative_folder_path, $fileinfo->getFilename());
+                        $value = Path::join(
+                            $relative_folder_path,
+                            $fileinfo->getFilename(),
+                        );
                         $title = $fileinfo->getFilename();
                         $icons[$value] = $title;
                     }
@@ -73,8 +79,10 @@ class IconFileField extends OptionsetField
     public function getAbsolutePathFromRelative($relative_path)
     {
         return Path::join(
-            (Director::publicDir() ? Director::publicFolder() : Director::baseFolder()),
-            ModuleResourceLoader::singleton()->resolveURL($relative_path)
+            Director::publicDir()
+                ? Director::publicFolder()
+                : Director::baseFolder(),
+            ModuleResourceLoader::singleton()->resolveURL($relative_path),
         );
     }
 
@@ -108,24 +116,27 @@ class IconFileField extends OptionsetField
             'Name' => $this->name,
             'Value' => '',
             'Title' => '',
-            'isChecked' => (!$this->value || $this->value == '')
+            'isChecked' => !$this->value || $this->value == '',
         ]);
 
         if ($source) {
             foreach ($source as $value => $title) {
-                $itemID = $this->ID() . '_' . preg_replace('/[^a-zA-Z0-9]/', '', $value);
+                $itemID =
+                    $this->ID() .
+                    '_' .
+                    preg_replace('/[^a-zA-Z0-9]/', '', $value);
                 $options[] = ArrayData::create([
                     'ID' => $itemID,
                     'Name' => $this->name,
                     'Value' => $value,
                     'Title' => $title,
-                    'isChecked' => $value == $this->value
+                    'isChecked' => $value == $this->value,
                 ]);
             }
         }
 
         $properties = array_merge($properties, [
-            'Options' => ArrayList::create($options)
+            'Options' => ArrayList::create($options),
         ]);
 
         $this->setTemplate('IconFileField');

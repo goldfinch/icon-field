@@ -3,7 +3,6 @@ import laravel from 'laravel-vite-plugin';
 import autoprefixer from 'autoprefixer';
 
 export default defineConfig(({ command, mode, ssrBuild }) => ({
-
   resolve: {
     alias: {},
   },
@@ -19,11 +18,13 @@ export default defineConfig(({ command, mode, ssrBuild }) => ({
         assetFileNames: (assetInfo) => {
           if (assetInfo.name.endsWith('.css')) {
             return '[name][extname]';
-          } if (
+          }
+          if (
             assetInfo.name.match(/(\.(woff2?|eot|ttf|otf)|font\.svg)(\?.*)?$/)
           ) {
             return 'fonts/[name][extname]';
-          } if (assetInfo.name.match(/\.(jpg|png|svg)$/)) {
+          }
+          if (assetInfo.name.match(/\.(jpg|png|svg)$/)) {
             return 'images/[name][extname]';
           }
 
@@ -34,23 +35,15 @@ export default defineConfig(({ command, mode, ssrBuild }) => ({
   },
 
   plugins: [
-
     laravel({
-      input: [
-        'src/icon-styles.scss',
-        'src/icon.js',
-      ],
+      input: ['src/icon-styles.scss', 'src/icon.js'],
       refresh: true,
     }),
-
   ],
 
   css: {
-
     postcss: {
-      plugins: [
-        autoprefixer,
-      ],
+      plugins: [autoprefixer],
     },
   },
 }));

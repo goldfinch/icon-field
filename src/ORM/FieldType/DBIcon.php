@@ -15,7 +15,7 @@ class DBIcon extends DBField
     private static $casting = [
         'URL' => 'HTMLFragment',
         'IMG' => 'HTMLFragment',
-        'SVG' => 'HTMLFragment'
+        'SVG' => 'HTMLFragment',
     ];
 
     public function requireField()
@@ -48,7 +48,7 @@ class DBIcon extends DBField
     {
         $url = ModuleResourceLoader::singleton()->resolveURL($this->URL());
 
-        return '<img class="icon" src="'.$url.'" />';
+        return '<img class="icon" src="' . $url . '" />';
     }
 
     public function SVG()
@@ -56,20 +56,20 @@ class DBIcon extends DBField
         $url = $this->URL() ?? '';
 
         if (substr($url, strlen($url) - 4) !== '.svg') {
-            user_error('Deprecation notice: Direct access to $Icon.SVG in templates is deprecated, please use $Icon', E_USER_WARNING);
+            user_error(
+                'Deprecation notice: Direct access to $Icon.SVG in templates is deprecated, please use $Icon',
+                E_USER_WARNING,
+            );
         }
 
-        $filePath = Path::join(
-            Director::baseFolder(),
-            $url
-        );
+        $filePath = Path::join(Director::baseFolder(), $url);
 
         if (!file_exists($filePath)) {
             return false;
         }
 
         $svg = file_get_contents($filePath);
-        return '<span class="icon svg">'.$svg.'</span>';
+        return '<span class="icon svg">' . $svg . '</span>';
     }
 
     public function scaffoldFormField($title = null, $params = null)
