@@ -3,7 +3,6 @@
 namespace Goldfinch\Icon\Extensions;
 
 use SilverStripe\Core\Extension;
-use SilverStripe\Admin\LeftAndMain;
 use SilverStripe\View\Requirements;
 use Goldfinch\Icon\Forms\IconFontField;
 
