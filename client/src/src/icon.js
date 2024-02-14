@@ -1,16 +1,48 @@
 (function ($) {
 
-  function setIconValue(val, input, selected, parent) {
+  function getObjectKey(obj, k, v) {
+
+    for (const [key, value] of Object.entries(obj)) {
+      if (value[k] == v) {
+        return key;
+      }
+    }
+  }
+
+  function setIconValue(val, input, selected, parent, config, source) {
     input.val(val)
 
     let vals = val.split(',')
     selected.html('')
 
     let ul = $('<ul>');
-    vals.forEach((i, li) => {
-      ul.append('<li data-key="'+i+'"><i class="'+i+'" title="'+i+'"></i></li>')
 
-      parent.find('li[data-key="'+i+'"]').attr('data-selected', true)
+    // console.log(val, input, selected, parent, config, source)
+
+
+
+    // let data = Object.entries(source);
+
+    vals.forEach((i, li) => {
+      let k = getObjectKey(source, 'Value', i);
+
+      if (k) {
+        let item = source[k]
+        ul.append(item.Template)
+        parent.find('li[data-value="'+item.Value+'"]').attr('data-selected', true)
+      }
+
+      // var icon;
+
+      // if (config.type == 'dir') {
+      //   icon = '<i style="display: inline-block; width: 32px; height: 32px; mask-size: cover; mask-repeat: no-repeat; mask-position: center; background-color: #43536d; mask-image: url('+config.source+'/'+source[i].source+')"></i>'
+      // } else if (config.type == 'font') {
+      //   icon = '<i class="'+i+'" title="'+i+'"></i>'
+      // }
+
+      // ul.append('<li data-key="'+i+'">'+icon+'</li>')
+
+      // parent.find('li[data-key="'+i+'"]').attr('data-selected', true)
     })
     selected.html(ul)
   }
@@ -36,7 +68,7 @@
 
         els.each((i, li) => {
           // let v = $(li);
-          if (li.getAttribute('data-key').search(searchStr) >= 0) {
+          if (li.getAttribute('data-search-str').search(searchStr) >= 0) {
             li.setAttribute('data-display', true)
           } else {
             li.setAttribute('data-display', false)
@@ -52,7 +84,7 @@
     }, 500)
   }
 
-  function initSelections(source, el, input, selected) {
+  function initSelections(source, el, input, selected, config) {
     let ul = $('<ul>');
     let span = $('<span>');
     let vals = [];
@@ -62,7 +94,18 @@
     }
 
     for (const [key, value] of Object.entries(source)) {
-      ul.append('<li data-key="'+key+'" data-selected="'+(vals.includes(key) ? true : false)+'"><label><i class="'+key+'" title="'+(value.title ? value.title : key)+'"></i></label></li>')
+      // var icon;
+
+      // if (config.type == 'dir') {
+      //   icon = '<i style="display: inline-block; width: 32px; height: 32px; mask-size: cover; mask-repeat: no-repeat; mask-position: center; background-color: #43536d; mask-image: url('+config.source+'/'+value.source+')"></i>'
+      // } else if (config.type == 'font') {
+      //   icon = '<i class="'+key+'" title="'+(value.title ? value.title : key)+'"></i>'
+      // }
+
+      let searchData = [value.Value, value.Title, value.Source]
+
+      ul.append('<li data-value="'+value.Value+'" data-search-str="'+searchData.join()+'" data-key="'+key+'" data-selected="'+(vals.includes(value.Value.toString()) ? true : false)+'"><label>'+value.Template+'</label></li>')
+
     }
 
     el.append(span)
@@ -73,7 +116,7 @@
 
       el.find('li').attr('data-selected', false) // diselect all
 
-      setIconValue($(e.currentTarget).closest('li').attr('data-key'), input, selected, el)
+      setIconValue($(e.currentTarget).closest('li').attr('data-value'), input, selected, el, config, source)
     });
   }
 
@@ -113,7 +156,7 @@
           searchBox.on('keydown', (e) => {
             filterSelection(e, selection)
           })
-          initSelections(source, selection, input, selected)
+          initSelections(source, selection, input, selected, config)
           selection.removeClass('goldfinchicon__hide')
         })
         // ..

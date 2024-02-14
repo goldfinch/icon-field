@@ -4,11 +4,14 @@ namespace Goldfinch\Icon\Forms;
 
 use DirectoryIterator;
 use SilverStripe\Core\Path;
+use SilverStripe\Assets\File;
+use SilverStripe\Assets\Folder;
 use SilverStripe\ORM\ArrayList;
 use SilverStripe\View\ArrayData;
 use SilverStripe\Forms\FormField;
 use SilverStripe\Control\Director;
 use SilverStripe\View\Requirements;
+use Symfony\Component\Finder\Finder;
 use SilverStripe\Forms\OptionsetField;
 use SilverStripe\ORM\FieldType\DBHTMLText;
 use Symfony\Component\Filesystem\Filesystem;
@@ -17,6 +20,7 @@ use SilverStripe\Core\Manifest\ModuleResourceLoader;
 class IconField extends OptionsetField
 {
     private static $iconsSet;
+    private static $iconsList;
 
     private static $iconsSetConfig;
 
@@ -45,9 +49,64 @@ class IconField extends OptionsetField
         return $this;
     }
 
+    public function getCurrentIcons()
+    {
+        $cfg = self::$iconsSetConfig;
+        $values = explode(',', self::Value());
+        $source = $this->iconsList;
+
+        $html = '';
+
+        if ($cfg['type'] == 'font') {
+
+            //
+
+        } else if ($cfg['type'] == 'dir') {
+
+            //
+
+        } else if ($cfg['type'] == 'upload') {
+
+            foreach ($values as $v) {
+
+                $item = array_filter($source, function($i) use ($v) {
+                    return $i['Value'] == $v;
+                });
+
+                if ($item && count($item)) {
+                    $item = current($item);
+
+                    $html .= '<li>' . $item['Template'] . '</li>';
+                }
+            }
+
+        } else if ($cfg['type'] == 'json') {
+
+            //
+
+        }
+
+        $return = DBHTMLText::create();
+        $return->setValue('<ul>'.$html.'</ul>');
+
+        return $return;
+    }
+
     public function setIconsSource()
     {
         $cfg = self::$iconsSetConfig;
+
+        /*
+            $schemaList = [
+                'value-icon' => [
+                    'title' => '', // optional
+                    'value' => 'value-icon-prior', // optional (used prior the key)
+                    'source' => '', // for display purpose (can be a full link, filename with extension etc.)
+                    'template' => '', // added at the backend (not for customizations)
+                ],
+            ];
+        */
+        $schemaList = [];
 
         if ($cfg['type'] == 'font') {
 
@@ -61,21 +120,90 @@ class IconField extends OptionsetField
 
                 if ($content && is_array($content) && count($content)) {
 
-                    $this->source = $content;
+                    $schemaList = $content;
                 }
             }
 
+        } else if ($cfg['type'] == 'dir') {
+
+            $finder = new Finder();
+            $files = $finder->in(PUBLIC_PATH . $cfg['source'])->files();
+
+            foreach ($files as $file) {
+
+                $filename = $file->getFilename();
+                $ex = explode('.', $filename);
+                $schemaList[$ex[0]] = [
+                    'Title' => '',
+                    'Source' => $filename
+                ];
+            }
+
+        } else if ($cfg['type'] == 'upload') {
+
+            $targetFolder = File::get()->filter(['ClassName' => Folder::class, 'Name' => $cfg['source']])->first();
+
+            if ($targetFolder) {
+
+                $folder = File::get()->byID(1);
+
+                if ($folder && $folder == Folder::class) {
+                    foreach ($folder->myChildren() as $file) {
+
+                        $item = [
+                            'Title' => $file->Title,
+                            'Value' => $file->ID,
+                            'Source' => $file->getURL(),
+                        ];
+
+                        $item['Template'] = $this->renderIconTemplate($item);
+
+                        $schemaList[] = $item;
+                    }
+                }
+            } else {
+                // specified folder in .yml is not found
+            }
+
+        } else if ($cfg['type'] == 'json') {
+
+            //
+
+        }
+
+        $this->iconsList = $schemaList;
+        $this->source = ArrayList::create($schemaList)->map('Value', 'Title')->toArray();
+    }
+
+    public function renderIconTemplate($item)
+    {
+        $cfg = self::$iconsSetConfig;
+
+        $render = '';
+
+        if ($cfg['type'] == 'font') {
+
+            //
 
         } else if ($cfg['type'] == 'dir') {
+
             //
+
         } else if ($cfg['type'] == 'upload') {
+
+            $render = $this->customise(ArrayData::create($item))->renderWith('Goldfinch/Icon/Types/Admin/UploadItem')->RAW();
+        } else if ($cfg['type'] == 'json') {
+
             //
+
         }
+
+        return $render;
     }
 
     public function getIconsConfig()
     {
-        return self::$iconsSetConfig;
+        return ArrayData::create(self::$iconsSetConfig);
     }
 
     public function getIconsConfigJSON()
@@ -85,7 +213,7 @@ class IconField extends OptionsetField
 
     public function getSourceJSON()
     {
-        return json_encode($this->source);
+        return json_encode($this->iconsList);
     }
 
     // public function setIconsSource()
@@ -150,43 +278,44 @@ class IconField extends OptionsetField
     //     return $html;
     // }
 
+    // ! could be useless
     public function Field($properties = [])
     {
         Requirements::css('goldfinch/icon:client/dist/icon-styles.css');
         Requirements::javascript('goldfinch/icon:client/dist/icon.js');
-        $source = $this->getSource();
-        $options = [];
+        $source = $this->iconsList;
+        $options = new ArrayList;
 
         // Add a clear option
-        $options[] = ArrayData::create([
+        $options->push(ArrayData::create([
             'ID' => 'none',
             'Name' => $this->name,
             'Value' => '',
             'Title' => '',
             'isChecked' => !$this->value || $this->value == '',
-        ]);
+        ]));
 
         if ($source) {
             foreach ($source as $key => $v) {
-                $value = $key;
+                $value = isset($v['value']) ? $v['value'] : $key;
                 $title = isset($v['title']) && $v['title'];
 
                 $itemID =
                     $this->ID() .
                     '_' .
                     preg_replace('/[^a-zA-Z0-9]/', '', $value);
-                $options[] = ArrayData::create([
+                $options->push(ArrayData::create([
                     'ID' => $itemID,
                     'Name' => $this->name,
                     'Value' => $value,
                     'Title' => $title,
-                    'isChecked' => $value == $this->value,
-                ]);
+                    'isChecked' => $value == $this->Value,
+                ]));
             }
         }
 
         $properties = array_merge($properties, [
-            'Options' => ArrayList::create($options),
+            'Options' => $options->map('Value', 'Title'),
         ]);
 
         $this->setTemplate('IconField');

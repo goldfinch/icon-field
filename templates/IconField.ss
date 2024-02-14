@@ -8,11 +8,18 @@
   <input type="hidden" name="$Name" id="$ID" value="$Value" data-goldfinch-icon-input>
 
   <div class="goldfinchicon__wrapper goldfinchicon__wrapper--selected" data-goldfinch-icon-selected>
-    <ul>
+    $CurrentIcons
+    <%-- <ul>
       <% if $Value %>
-      <li><i class="$Value"></i></li>
+      <li>
+        <% if IconsConfig.type == 'dir' %>
+        <i style="display: inline-block; width: 32px; height: 32px; mask-size: cover; mask-repeat: no-repeat; mask-position: center; background-color: #43536d; mask-image: url({$IconsConfig.source}/{$Value}.svg)"></i>
+        <% else_if IconsConfig.type == 'font' %>
+        <i class="$Value"></i>
+        <% end_if %>
+      </li>
       <% end_if %>
-    </ul>
+    </ul> --%>
   </div>
 
   <div data-goldfinch-icon-loader>

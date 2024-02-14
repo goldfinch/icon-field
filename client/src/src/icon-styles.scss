@@ -44,6 +44,7 @@
 
 .goldfinchicon .goldfinchicon__wrapper > ul > li > label {
   cursor: pointer;
+  margin: 0;
 }
 
 .goldfinchicon .goldfinchicon__wrapper.goldfinchicon__wrapper--selections {
@@ -77,6 +78,8 @@
 }
 .goldfinchicon .goldfinchicon__wrapper.goldfinchicon__wrapper--selected > ul > li {
   margin: 0 10px;
+  display: flex;
+  align-items: center;
 }
 .goldfinchicon .goldfinchicon__wrapper.goldfinchicon__wrapper--selected > ul > li > i {
   font-size: 32px;
