@@ -17,33 +17,19 @@
 
     let ul = $('<ul>');
 
-    // console.log(val, input, selected, parent, config, source)
-
-
-
-    // let data = Object.entries(source);
-
+    let count = 0;
     vals.forEach((i, li) => {
-      let k = getObjectKey(source, 'Value', i);
+      let k = getObjectKey(source, 'value', i);
 
       if (k) {
         let item = source[k]
-        ul.append(item.Template)
-        parent.find('li[data-value="'+item.Value+'"]').attr('data-selected', true)
+        ul.append('<li>'+item.template+'</li>')
+        parent.find('li[data-value="'+item.value+'"]').attr('data-selected', true)
+        count++;
       }
 
-      // var icon;
-
-      // if (config.type == 'dir') {
-      //   icon = '<i style="display: inline-block; width: 32px; height: 32px; mask-size: cover; mask-repeat: no-repeat; mask-position: center; background-color: #43536d; mask-image: url('+config.source+'/'+source[i].source+')"></i>'
-      // } else if (config.type == 'font') {
-      //   icon = '<i class="'+i+'" title="'+i+'"></i>'
-      // }
-
-      // ul.append('<li data-key="'+i+'">'+icon+'</li>')
-
-      // parent.find('li[data-key="'+i+'"]').attr('data-selected', true)
     })
+    ul.attr('data-count', count)
     selected.html(ul)
   }
 
@@ -76,8 +62,8 @@
         })
 
         let foundEls = el.children('ul').children('li[data-display="true"]');
-
-        span.html(foundEls.length + ' icons found')
+        let count = parseInt(foundEls.length);
+        span.html(count + ' icon'+(count > 1 ? 's' : '')+' found')
 
       }
 
@@ -94,17 +80,11 @@
     }
 
     for (const [key, value] of Object.entries(source)) {
-      // var icon;
 
-      // if (config.type == 'dir') {
-      //   icon = '<i style="display: inline-block; width: 32px; height: 32px; mask-size: cover; mask-repeat: no-repeat; mask-position: center; background-color: #43536d; mask-image: url('+config.source+'/'+value.source+')"></i>'
-      // } else if (config.type == 'font') {
-      //   icon = '<i class="'+key+'" title="'+(value.title ? value.title : key)+'"></i>'
-      // }
+      let v = value.value ? value.value : key;
+      let searchData = [v, value.title, value.source]
 
-      let searchData = [value.Value, value.Title, value.Source]
-
-      ul.append('<li data-value="'+value.Value+'" data-search-str="'+searchData.join()+'" data-key="'+key+'" data-selected="'+(vals.includes(value.Value.toString()) ? true : false)+'"><label>'+value.Template+'</label></li>')
+      ul.append('<li data-value="'+v+'" data-search-str="'+searchData.join()+'" data-key="'+key+'" data-selected="'+(vals.includes(v.toString()) ? true : false)+'"><label>'+value.template+'</label></li>')
 
     }
 
@@ -118,6 +98,21 @@
 
       setIconValue($(e.currentTarget).closest('li').attr('data-value'), input, selected, el, config, source)
     });
+  }
+
+  function removeIcon(e, input, selected) {
+    let clickedIcon = e.currentTarget.getAttribute('data-value');
+    let updatedVal = input.val()
+      .replace(',' + clickedIcon, '')
+      .replace(clickedIcon + ',', '')
+      .replace(clickedIcon, '')
+    input.val(updatedVal)
+
+    let count = updatedVal.split(',')
+    count = count > 0 ? count : 0
+
+    selected.find('ul').attr('data-count', count)
+    selected.find('ul').html('')
   }
 
   $(document).ready(() => {
@@ -142,12 +137,17 @@
         const config = JSON.parse($(this).attr('data-goldfinch-icon-config'));
         const source = JSON.parse($(this).attr('data-goldfinch-icon-source'));
 
-        const input = $(this).find('[data-goldfinch-icon-input]');
+        const input = $(this).find('[data-goldfinch-icon="key"]');
+        const inputData = $(this).find('[data-goldfinch-icon="data"]');
         const selected = $(this).find('[data-goldfinch-icon-selected]');
         const loader = $(this).find('[data-goldfinch-icon-loader]')[0];
         const loaderBtn = $(this).find('[data-goldfinch-icon-loader] button')[0];
         const searchBox = $(this).find('[data-goldfinch-icon-search]');
         const selection = $(this).find('[data-goldfinch-icon-selection]');
+
+        selected.find('li').on('click', (e) => {
+          removeIcon(e, input, selected)
+        })
 
         $(loaderBtn).on('click', () => {
 
@@ -164,55 +164,3 @@
     });
   });
 })(jQuery);
-
-
-
-// document
-//   .querySelectorAll('.js-goldfinchicon input[type=radio]')
-//   .forEach((elem) => {
-//     elem.addEventListener('click', allowUncheck);
-//     // only needed if elem can be pre-checked
-//     elem.previous = elem.checked;
-//   });
-
-// function allowUncheck(e) {
-//   if (this.previous) {
-//     this.checked = false;
-//   }
-//   // need to update previous on all elements of this group
-//   // (either that or store the id of the checked element)
-//   document
-//     .querySelectorAll(`input[type=radio][name=${this.name}]`)
-//     .forEach((elem) => {
-//       elem.previous = elem.checked;
-//     });
-// }
-
-// function gf1_updateSelected() {
-//   console.log('updateSelected')
-// }
-
-// if (!window.goldfinch) {
-//   window.goldfinch = {};
-// }
-
-// window.goldfinch.iconSelect = function(v) {
-//   gf1_updateSelected(v)
-// }
-
-// window.goldfinch.iconSearch = function(v) {
-//   console.log(v)
-// }
-
-// var iconSearchFields = document.querySelectorAll("[data-icon-search-field]");
-
-// document.addEventListener('DOMContentLoaded', () => {
-
-//   iconSearchFields.forEach((el, k) => {
-//     console.log(el,k)
-//   })
-// })
-
-// // input.addEventListener("keypress", function(event) {
-// //   console.log(event)
-// // });

@@ -1,1 +1,1 @@
-<i class="$value" title="$title"></i>
+<% include Goldfinch/Icon/Types/Admin/IconTag %>
