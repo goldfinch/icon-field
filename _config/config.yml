@@ -1,6 +1,6 @@
 ---
-Name: goldfinch-icon
+Name: goldfinch-icon-field
 ---
 SilverStripe\Core\Injector\Injector:
   Icon:
-    class: Goldfinch\Icon\ORM\FieldType\DBIcon
+    class: Goldfinch\IconField\ORM\FieldType\DBIcon

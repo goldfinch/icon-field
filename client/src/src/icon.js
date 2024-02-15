@@ -23,7 +23,7 @@
 
       if (k) {
         let item = source[k]
-        ul.append('<li>'+item.template+'</li>')
+        ul.append('<li>'+item.admin_template+'</li>')
         parent.find('li[data-value="'+item.value+'"]').attr('data-selected', true)
         count++;
       }
@@ -84,7 +84,7 @@
       let v = value.value ? value.value : key;
       let searchData = [v, value.title, value.source]
 
-      ul.append('<li data-value="'+v+'" data-search-str="'+searchData.join()+'" data-key="'+key+'" data-selected="'+(vals.includes(v.toString()) ? true : false)+'"><label>'+value.template+'</label></li>')
+      ul.append('<li data-value="'+v+'" data-search-str="'+searchData.join()+'" data-key="'+key+'" data-selected="'+(vals.includes(v.toString()) ? true : false)+'"><label>'+value.admin_template+'</label></li>')
 
     }
 

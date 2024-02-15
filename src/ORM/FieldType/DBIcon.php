@@ -1,50 +1,13 @@
 <?php
 
-namespace Goldfinch\Icon\ORM\FieldType;
+namespace Goldfinch\IconField\ORM\FieldType;
 
-use Goldfinch\Icon\Forms\IconField;
+use Goldfinch\IconField\Forms\IconField;
 use PhpTek\JSONText\ORM\FieldType\JSONText;
 use SilverStripe\ORM\FieldType\DBComposite;
 
 class DBIcon extends DBComposite
 {
-    /**
-    - $Icon
-        json: img
-        dir: img
-        upload: img
-        font: i
-
-    - $Icon.URL
-        json: +
-        dir: +
-        upload: +
-        font: -
-
-    - $Icon.Title
-        json: +
-        dir: +
-        upload: +
-        font: -
-
-    - $Icon.Color
-        json: + (if svg)
-        dir: + (if svg)
-        upload: + (if svg)
-        font: +
-
-    - $Icon.Size
-        json: +
-        dir: +
-        upload: +
-        font: +
-
-    - $Icon.WithAttr
-    - $Icon.WithClass
-
-    - loop $Icon (multiple)
-     */
-
     /**
      * @var string $locale
      */
@@ -58,6 +21,56 @@ class DBIcon extends DBComposite
         'Data' => JSONText::class,
     ];
 
+    private static $casting = [
+        // 'defaultTag' => 'HTMLFragment',
+    ];
+
+    public function forTemplate()
+    {
+        return $this->defaultTag();
+    }
+
+    public function defaultTag()
+    {
+        $key = $this->getKey();
+
+        if ($key) {
+            $data = json_decode($this->getData(), true);
+
+            $field = $this->scaffoldFormField($this->getName(), ['static' => true]);
+
+            return $field->renderIconTemplate($data, false, $data['set'], $key);
+        }
+    }
+
+    public function URL()
+    {
+        $key = $this->getKey();
+
+        if ($key) {
+            $data = json_decode($this->getData(), true);
+
+            if ($data && isset($data['source'])) {
+                return $data['source'];
+            }
+        }
+    }
+
+    public function Title()
+    {
+        $key = $this->getKey();
+
+        if ($key) {
+            $data = json_decode($this->getData(), true);
+
+            if ($data && isset($data['title']) && $data['title'] && $data['title'] != '') {
+                return $data['title'];
+            } else {
+                return $key;
+            }
+        }
+    }
+
     public function getParse($key = null)
     {
         $data = $this->getData();
@@ -69,33 +82,20 @@ class DBIcon extends DBComposite
         $data = json_decode($data, true);
 
         $parse = [
-            'set' => '',
-            'type' => '',
-            'title' => $data['title'],
-            'source' => $data['source'],
+            'set' => $data['set'],
         ];
 
         return $key ? (isset($parse[$key]) ? $parse[$key] : null) : $parse;
     }
 
-    public function getIconSet()
+    public function getIconSetName()
     {
-        return $this->getParse('set');
+        return $this->getParse('set')['name'];
     }
 
     public function getIconType()
     {
-        return $this->getParse('type');
-    }
-
-    public function getIconTitle()
-    {
-        return $this->getParse('title');
-    }
-
-    public function getIconSource()
-    {
-        return $this->getParse('source');
+        return $this->getParse('set')['type'];
     }
 
     /**
@@ -210,7 +210,18 @@ class DBIcon extends DBComposite
      */
     public function scaffoldFormField($title = null, $params = null)
     {
-        return IconField::create($this->getName(), $title);
+        if ($params && isset($params['static'])) {
+            $static = $params['static'];
+        } else {
+            $static = false;
+        }
+
+        if (!isset($params['set']['name']) && $data = $this->getData()) {
+            $params = json_decode($data, true);
+            $set = $params['set']['name'];
+        }
+
+        return isset($set) ? IconField::create($set, $this->getName(), $title, '', $static) : null;
         // ->setLocale($this->getLocale());
     }
 }
