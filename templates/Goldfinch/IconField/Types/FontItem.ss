@@ -1,1 +1,1 @@
-<i class="$Icon.value" title="$Icon.title"></i>
+<i title="$Icon.title" class="$Icon.value"<% if InlineStyle %> style="$InlineStyle"<% end_if %>></i>

@@ -80,6 +80,7 @@ font: +
 
 <%-- $Icon.IconSetName --%>
 <%-- $Icon.IconType --%>
+<!-- $Icon.Size(100).Color(green) -->
 
 <h5>Font</h5>
 <div>$IconFont</div>

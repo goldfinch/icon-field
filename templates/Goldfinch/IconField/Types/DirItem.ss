@@ -1,1 +1,2 @@
-<i title="$Icon.title" style="display: inline-block; width: 32px; height: 32px; mask-size: cover; mask-repeat: no-repeat; mask-position: center; background-color: #43536d; mask-image: url($Icon.source)"></i>
+<i title="$Icon.title"<% if InlineStyle %> style="$InlineStyle"<% end_if %>></i>
+

@@ -13,6 +13,9 @@ class DBIcon extends DBComposite
      */
     protected $locale = null;
 
+    protected $iconSize = null;
+    protected $iconColor = null;
+
     /**
      * @var array<string,string>
      */
@@ -22,15 +25,15 @@ class DBIcon extends DBComposite
     ];
 
     private static $casting = [
-        // 'defaultTag' => 'HTMLFragment',
+        // 'getTag' => 'HTMLFragment',
     ];
 
     public function forTemplate()
     {
-        return $this->defaultTag();
+        return $this->getTag();
     }
 
-    public function defaultTag()
+    public function getTag()
     {
         $key = $this->getKey();
 
@@ -39,7 +42,10 @@ class DBIcon extends DBComposite
 
             $field = $this->scaffoldFormField($this->getName(), ['static' => true]);
 
-            return $field->renderIconTemplate($data, false, $data['set'], $key);
+            return $field->renderIconTemplate($data + [
+                'color' => $this->iconColor,
+                'size' => $this->iconSize,
+            ], false, $data['set'], $key);
         }
     }
 
@@ -69,6 +75,20 @@ class DBIcon extends DBComposite
                 return $key;
             }
         }
+    }
+
+    public function Size($size)
+    {
+        $this->iconSize = $size;
+
+        return $this;
+    }
+
+    public function Color($color)
+    {
+        $this->iconColor = $color;
+
+        return $this;
     }
 
     public function getParse($key = null)

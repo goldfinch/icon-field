@@ -84,7 +84,7 @@ class IconField extends FormField
 
             foreach ($values as $v) {
                 $icon = $this->getIconByKey($v);
-                $html .= '<li data-value="'.$v.'">' . $icon['template'] . '</li>';
+                $html .= '<li data-value="'.$v.'">' . $icon['admin_template'] . '</li>';
             }
         }
 
@@ -167,8 +167,10 @@ class IconField extends FormField
                         if (!isset($sl['value']) || $sl['value'] == '') {
                             $sl['value'] = $k;
                         }
+
+                        $sl['admin_template'] = $this->renderIconAdminTemplate($sl);
+
                         if (!isset($sl['template']) || $sl['template'] == '') {
-                            $sl['admin_template'] = $this->renderIconAdminTemplate($sl);
                             $sl['template'] = $this->renderIconTemplate($sl);
                         }
 
@@ -245,8 +247,10 @@ class IconField extends FormField
                         if (!isset($sl['value']) || $sl['value'] == '') {
                             $sl['value'] = $k;
                         }
+
+                        $sl['admin_template'] = $this->renderIconAdminTemplate($sl);
+
                         if (!isset($sl['template']) || $sl['template'] == '') {
-                            $sl['admin_template'] = $this->renderIconAdminTemplate($sl);
                             $sl['template'] = $this->renderIconTemplate($sl);
                         }
 
@@ -310,7 +314,81 @@ class IconField extends FormField
             $item['title'] = $item['value'];
         }
 
-        return $this->customise(ArrayData::create(['Icon' => $item]))->renderWith($template)->RAW();
+        if (isset($item['source']) && $item['source'] && $item['source'] != '') {
+            $ext = explode('.', $item['source']);
+            $ext = end($ext);
+        } else {
+            $ext = null;
+        }
+
+        if ($admin) {
+
+            if ($cfg['type'] == 'upload' || $cfg['type'] == 'dir' || $cfg['type'] == 'json') {
+
+                $inlineStyle = [
+                    'display' => 'inline-block',
+                    'width' => '32px',
+                    'height' => '32px',
+                    'mask-size' => 'contain',
+                    'mask-repeat' => 'no-repeat',
+                    'mask-position' => 'center',
+                    'mask-image' => 'url(' . $item['source'] . ')',
+                    'background-color' => '#43536d',
+                ];
+            }
+
+        } else {
+
+            $inlineStyle = [];
+
+            // defaults
+            if ($cfg['type'] == 'upload' || $cfg['type'] == 'dir' || $cfg['type'] == 'json') {
+
+                $inlineStyle = [
+                    'display' => 'inline-block',
+                    'width' => '32px',
+                    'height' => '32px',
+                    'mask-size' => 'contain',
+                    'mask-repeat' => 'no-repeat',
+                    'mask-position' => 'center',
+                    'mask-image' => 'url(' . $item['source'] . ')',
+                    'background-color' => '#43536d',
+                ];
+            }
+
+            // apply custom styles
+
+            if (isset($item['color'])) {
+                if ($cfg['type'] == 'font') {
+                    $inlineStyle['color'] = $item['color'];
+                } else if ($ext == 'svg') {
+                    $inlineStyle['background-color'] = $item['color'];
+                }
+            }
+
+            if (isset($item['size'])) {
+                $size = (int) $item['size'];
+
+                if ($size) {
+                    if ($cfg['type'] == 'font') {
+                        $inlineStyle['font-size'] = $item['size'] . 'px';
+                    } else {
+                        $inlineStyle['width'] = $item['size'] . 'px';
+                        $inlineStyle['height'] = $item['size'] . 'px';
+                    }
+                }
+            }
+        }
+
+        $inlineStyleStr = '';
+
+        if (!empty($inlineStyle)) {
+            foreach ($inlineStyle as $prop => $style) {
+                $inlineStyleStr .= $prop . ':' . $style . ';';
+            }
+        }
+
+        return $this->customise(ArrayData::create(['Icon' => $item, 'InlineStyle' => $inlineStyleStr]))->renderWith($template)->RAW();
     }
 
     private function setIconsSet($set): void
@@ -407,6 +485,9 @@ class IconField extends FormField
 
         if (is_string($value)) {
             $value = $this->dataBundle($value);
+        } else {
+            $value = $this->dataBundle($value['Key']);
+            $value['Data'] = json_encode($value['Data']);
         }
 
         // Update each field
