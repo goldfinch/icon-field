@@ -42,10 +42,12 @@ class DBIcon extends DBComposite
 
             $field = $this->scaffoldFormField($this->getName(), ['static' => true]);
 
-            return $field->renderIconTemplate($data + [
-                'color' => $this->iconColor,
-                'size' => $this->iconSize,
-            ], false, $data['set'], $key);
+            if ($field) {
+                return $field->renderIconTemplate($data + [
+                    'color' => $this->iconColor,
+                    'size' => $this->iconSize,
+                ], false, $data['set'], $key);
+            }
         }
     }
 
@@ -238,7 +240,9 @@ class DBIcon extends DBComposite
 
         if (!isset($params['set']['name']) && $data = $this->getData()) {
             $params = json_decode($data, true);
-            $set = $params['set']['name'];
+            if (isset($params['set']['name'])) {
+                $set = $params['set']['name'];
+            }
         }
 
         return isset($set) ? IconField::create($set, $this->getName(), $title, '', $static) : null;
