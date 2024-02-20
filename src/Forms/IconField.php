@@ -84,7 +84,10 @@ class IconField extends FormField
 
             foreach ($values as $v) {
                 $icon = $this->getIconByKey($v);
-                $html .= '<li data-value="'.$v.'">' . $icon['admin_template'] . '</li>';
+
+                if (isset($icon['admin_template'])) {
+                    $html .= '<li data-value="'.$v.'">' . $icon['admin_template'] . '</li>';
+                }
             }
         }
 
@@ -113,6 +116,10 @@ class IconField extends FormField
             Requirements::javascript('goldfinch/icon-field:client/dist/icon.js');
 
             $this->setIconsList();
+        }
+
+        if (!$this->iconsSetConfig) {
+            $this->setDescription('<span style="color: red">The set <b>'.$set.'</b> does not exist in YAML config.</span>');
         }
 
         parent::__construct($name, $title, $value);
@@ -148,6 +155,10 @@ class IconField extends FormField
             ];
         */
         $schemaList = [];
+
+        if (!isset($cfg['type'])) {
+            return;
+        }
 
         if ($cfg['type'] == 'font') {
 
@@ -540,7 +551,7 @@ class IconField extends FormField
             'Data' => [
                 'set' => [
                     'name' => $this->iconsSet,
-                    'type' => $set['type'],
+                    'type' => isset($set['type']) ? $set['type'] : null,
                     // 'source' => $set['source'],
                 ],
                 'title' => $item && isset($item['title']) ? $item['title'] : '',
