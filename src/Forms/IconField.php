@@ -643,7 +643,7 @@ class IconField extends FormField
 
     public function iconHidePreview()
     {
-        $this->addExtraClass('goldfinch-google-icon-hide-preview');
+        $this->addExtraClass('goldfinch-icon-hide-preview');
 
         return $this;
     }
