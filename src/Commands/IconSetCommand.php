@@ -2,6 +2,7 @@
 
 namespace Goldfinch\IconField\Commands;
 
+use Goldfinch\Taz\Services\InputOutput;
 use Goldfinch\Taz\Console\GeneratorCommand;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Console\Command\Command;
@@ -30,17 +31,17 @@ class IconSetCommand extends GeneratorCommand
         $setType = $helper->ask($input, $output, $question);
 
         if ($setType == 'font') {
-            $sourceExample = 'https://cdn.myicons.net/icons.min.css';
+            $sourceExample = '(eg: https://cdn.myicons.net/icons.min.css)';
         } else if ($setType == 'dir') {
-            $sourceExample = 'icons';
+            $sourceExample = '(within the public dir, eg: icons)';
         } else if ($setType == 'upload') {
-            $sourceExample = 'icons';
+            $sourceExample = '(eg: icons)';
         }
 
         if ($setType == 'json') {
             $source = 'icon-' . $setName . '.json';
         } else {
-            $source = $this->askStringQuestion('Specify the source for this set (eg: '.$sourceExample.')', $input, $output);
+            $source = $this->askStringQuestion('Specify the source for this set ' . $sourceExample, $input, $output);
         }
 
         $setOptions = [
@@ -74,8 +75,9 @@ class IconSetCommand extends GeneratorCommand
 
         $config = $this->findYamlConfigFileByName('app-icons');
 
+        $fs = new Filesystem();
+
         if ($setType == 'font' || $setType == 'dir' || $setType == 'json') {
-            $fs = new Filesystem();
 
             if ($setType == 'json') {
                 $schemaTemplate = 'schema-json.json';
@@ -88,6 +90,28 @@ class IconSetCommand extends GeneratorCommand
                     '/vendor/goldfinch/icon-field/components/' . $schemaTemplate,
                 'app/_schema/icon-'.$setName.'.json',
             );
+        }
+
+        if ($setType == 'dir') {
+
+            $path = PUBLIC_PATH . '/' . $source;
+
+            if (!$fs->exists($path)) {
+
+                $createSource = $this->askStringQuestion('The folder `'.$path.'` does not exist. Would you like to create it? [y/n]', $input, $output, 'y');
+
+                if ($createSource == 'y' || $createSource == 'Y') {
+                    $fs->mkdir($path);
+                }
+            }
+
+        } else if ($setType == 'upload') {
+            $path = ASSETS_PATH . '/' . $source;
+
+            if (!$fs->exists($path)) {
+                $io = new InputOutput($input, $output);
+                $io->info('Youn need to create `'.$source.'` dir in `'.ASSETS_DIR.'` through CMS (/admin/assets)');
+            }
         }
 
         return Command::SUCCESS;

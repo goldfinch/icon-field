@@ -30,6 +30,11 @@ If you haven't used [**Taz**](https://github.com/goldfinch/taz)🌪️ before, *
 php taz iconset
 ```
 
+> Publish icon templates
+```bash
+php taz vendor:icon-field:templates
+```
+
 ## Usage
 
 ```php
@@ -45,7 +50,7 @@ class Page
     {
         $fields = parent::getCMSFields();
 
-        $fields->insertBefore('Content', IconField::create('font_awesome', 'Icon'));
+        $fields->insertBefore('Content', IconField::create('icon_set_name', 'Icon'));
     }
 }
 ```
