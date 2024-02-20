@@ -52,6 +52,7 @@ class Page
 
 ```html
 <!-- template.ss -->
+
 $Icon
 $Icon.Size(100).Color(green)
 $Icon.URL
