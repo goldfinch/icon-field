@@ -4,3 +4,7 @@ Name: goldfinch-icon-field
 SilverStripe\Core\Injector\Injector:
   Icon:
     class: Goldfinch\IconField\ORM\FieldType\DBIcon
+
+SilverStripe\Assets\File:
+  allowed_extensions:
+    - svg
