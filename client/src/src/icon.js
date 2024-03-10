@@ -54,7 +54,7 @@
 
         els.each((i, li) => {
           // let v = $(li);
-          if (li.getAttribute('data-search-str').search(searchStr) >= 0) {
+          if (li.getAttribute('data-search-str').toLowerCase().search(searchStr) >= 0) {
             li.setAttribute('data-display', true)
           } else {
             li.setAttribute('data-display', false)
@@ -82,6 +82,7 @@
     for (const [key, value] of Object.entries(source)) {
 
       let v = value.value ? value.value : key;
+
       let searchData = [v, value.title, value.source]
 
       ul.append('<li data-value="'+v+'" data-search-str="'+searchData.join()+'" data-key="'+key+'" data-selected="'+(vals.includes(v.toString()) ? true : false)+'"><label>'+value.admin_template+'</label></li>')
