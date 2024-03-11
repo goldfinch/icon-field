@@ -54,7 +54,7 @@
 
         els.each((i, li) => {
           // let v = $(li);
-          if (li.getAttribute('data-search-str').toLowerCase().search(searchStr) >= 0) {
+          if (li.getAttribute('data-search-str').toLowerCase().search(searchStr.toLowerCase()) >= 0) {
             li.setAttribute('data-display', true)
           } else {
             li.setAttribute('data-display', false)
