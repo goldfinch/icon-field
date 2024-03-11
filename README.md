@@ -67,6 +67,21 @@ $Icon.IconSetName
 $Icon.IconType
 ```
 
+## Vite support
+
+If you use [Vite](https://github.com/swordfox/vite) as a front-end build tool, you might want to include a dynamic vite link as a source for your icons. Easy, just use prefix `vite:` followed by relative path to the file of your build, as you have it in your `vite.config.js`.
+
+*example:*
+
+```yml
+Goldfinch\IconField\Forms\IconField:
+  icons_sets:
+    my_icons_set:
+      type: font
+      source: 'vite:themes/main/src/icons.scss'
+
+```
+
 ## License
 
 The MIT License (MIT)

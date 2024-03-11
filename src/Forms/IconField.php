@@ -6,16 +6,17 @@ use InvalidArgumentException;
 use SilverStripe\Assets\File;
 use SilverStripe\Assets\Folder;
 use SilverStripe\ORM\ArrayList;
+use Swordfox\Vite\Helpers\Vite;
 use SilverStripe\View\ArrayData;
 use SilverStripe\Forms\FormField;
 use SilverStripe\Forms\HiddenField;
 use SilverStripe\View\Requirements;
 use SilverStripe\Forms\LiteralField;
 use Symfony\Component\Finder\Finder;
-use Goldfinch\IconField\ORM\FieldType\DBIcon;
 use SilverStripe\ORM\DataObjectInterface;
 use SilverStripe\ORM\FieldType\DBHTMLText;
 use Symfony\Component\Filesystem\Filesystem;
+use Goldfinch\IconField\ORM\FieldType\DBIcon;
 
 class IconField extends FormField
 {
@@ -432,6 +433,13 @@ class IconField extends FormField
 
         if ($fonts && is_array($fonts)) {
             foreach ($fonts as $include) {
+
+                // vite link
+                if (substr($include, 0, 5) == 'vite:') {
+                    $include = substr($include, 5);
+                    $include = Vite::assetLink($include);
+                }
+
                 Requirements::css($include);
             }
         }
