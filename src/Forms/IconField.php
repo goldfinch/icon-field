@@ -9,10 +9,12 @@ use SilverStripe\ORM\ArrayList;
 use Swordfox\Vite\Helpers\Vite;
 use SilverStripe\View\ArrayData;
 use SilverStripe\Forms\FormField;
+use Psr\SimpleCache\CacheInterface;
 use SilverStripe\Forms\HiddenField;
 use SilverStripe\View\Requirements;
 use SilverStripe\Forms\LiteralField;
 use Symfony\Component\Finder\Finder;
+use SilverStripe\Core\Injector\Injector;
 use SilverStripe\ORM\DataObjectInterface;
 use SilverStripe\ORM\FieldType\DBHTMLText;
 use Symfony\Component\Filesystem\Filesystem;
@@ -145,6 +147,17 @@ class IconField extends FormField
     {
         $cfg = $this->iconsSetConfig;
 
+        $cfgHash = md5(json_encode($cfg));
+
+        $cache = Injector::inst()->get(CacheInterface::class . '.GoldfinchIconField');
+
+        if ($cache->has($cfgHash)) {
+
+            $this->iconsList = json_decode($cache->get($cfgHash), true);
+
+            return;
+        }
+
         /*
             $schemaList = [
                 0 => [
@@ -182,10 +195,10 @@ class IconField extends FormField
 
                         $sl['admin_template'] = $this->renderIconAdminTemplate($sl);
 
-                        if (!isset($sl['template']) || $sl['template'] == '') {
-                            $sl['template'] = $this->renderIconTemplate($sl);
-                        }
-
+                        // commented out as seem to be unused
+                        // if (!isset($sl['template']) || $sl['template'] == '') {
+                        //     $sl['template'] = $this->renderIconTemplate($sl);
+                        // }
 
                         $schemaList[$k] = $sl;
                     }
@@ -211,7 +224,7 @@ class IconField extends FormField
                 ];
 
                 $item['admin_template'] = $this->renderIconAdminTemplate($item);
-                $item['template'] = $this->renderIconTemplate($item);
+                // $item['template'] = $this->renderIconTemplate($item); // commented out as seem to be unused
                 $schemaList[] = $item;
             }
 
@@ -233,7 +246,7 @@ class IconField extends FormField
                         ];
 
                         $item['admin_template'] = $this->renderIconAdminTemplate($item);
-                        $item['template'] = $this->renderIconTemplate($item);
+                        // $item['template'] = $this->renderIconTemplate($item); // commented out as seem to be unused
                         $schemaList[] = $item;
                     }
                 }
@@ -262,10 +275,10 @@ class IconField extends FormField
 
                         $sl['admin_template'] = $this->renderIconAdminTemplate($sl);
 
-                        if (!isset($sl['template']) || $sl['template'] == '') {
-                            $sl['template'] = $this->renderIconTemplate($sl);
-                        }
-
+                        // commented out as seem to be unused
+                        // if (!isset($sl['template']) || $sl['template'] == '') {
+                        //     $sl['template'] = $this->renderIconTemplate($sl);
+                        // }
 
                         $schemaList[$k] = $sl;
                     }
@@ -275,9 +288,9 @@ class IconField extends FormField
         }
 
         $this->iconsList = $schemaList;
+
+        $cache->set($cfgHash, json_encode($schemaList), 3600);
     }
-
-
 
     private function renderIconAdminTemplate($item): string
     {
@@ -400,7 +413,27 @@ class IconField extends FormField
             }
         }
 
-        return $this->customise(ArrayData::create(['Icon' => $item, 'InlineStyle' => $inlineStyleStr]))->renderWith($template)->RAW();
+        // ! takes too much time to load with thousands of icons and multiple icon fields on the page
+        // return $this->customise(ArrayData::create(['Icon' => $item, 'InlineStyle' => $inlineStyleStr]))->renderWith($template)->RAW();
+
+        // !do template render in place instead (only for admin template for now, as the front-end templates can be re-declared by the user)
+        if (strpos($template, 'Types/Admin') !== false) {
+
+            if (
+                $template == 'Goldfinch/IconField/Types/Admin/DirItem' ||
+                $template == 'Goldfinch/IconField/Types/Admin/JsonItem' ||
+                $template == 'Goldfinch/IconField/Types/Admin/UploadItem'
+            ) {
+                return '<i class="'.$item['value'].'" title="'.$item['title'].'"></i>';
+            } else if ($template == 'Goldfinch/IconField/Types/Admin/FontItem') {
+                return '<i title="'.$item['title'].'" class="'.$item['value'].'"'.($inlineStyleStr ? ' style="'.$inlineStyleStr.'"' : '').'></i>';
+            }
+        } else {
+            // ! probably not in used (since ['template'] is commented out)
+
+            // front-end (through ss template)
+            return $this->customise(ArrayData::create(['Icon' => $item, 'InlineStyle' => $inlineStyleStr]))->renderWith($template)->RAW();
+        }
     }
 
     private function setIconsSet($set): void

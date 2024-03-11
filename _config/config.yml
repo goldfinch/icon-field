@@ -4,6 +4,10 @@ Name: goldfinch-icon-field
 SilverStripe\Core\Injector\Injector:
   Icon:
     class: Goldfinch\IconField\ORM\FieldType\DBIcon
+  Psr\SimpleCache\CacheInterface.GoldfinchIconField:
+    factory: SilverStripe\Core\Cache\CacheFactory
+    constructor:
+      namespace: "GoldfinchIconField"
 
 SilverStripe\Assets\File:
   allowed_extensions:
